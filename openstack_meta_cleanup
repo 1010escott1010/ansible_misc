@@ -1,0 +1,32 @@
+---
+- name: Robs junk
+  hosts: "{{ hosts }}"
+  sudo: yes
+  gather_facts: no
+# serial: "25%"
+
+  tasks:
+
+    - name: Umount mnt
+      mount: name=/mnt state=unmounted
+
+    - name: Running Robs shit
+      shell: "ls /x/nova/instances |grep ^[a-zA-Z]*[0-9]"
+      register: dir_name
+
+    - debug: var=dir_name.stdout_lines
+
+    - name: Mount Config Drive and Make Backup Copy Config Drive Config
+      raw: "mount -o loop /x/nova/instances/{{ item }}/disk.config /mnt; mkdir -p /mnt/openstack/backup; cp /mnt/openstack/content/0000 /mnt/openstack/backup/0000.5202017;umount /mnt"
+      with_items:
+      - "{{dir_name.stdout_lines}}"
+
+    - name: Remove DNS Settings
+      raw: "mount -o loop /x/nova/instances/{{ item }}/disk.config /mnt; sed -i /dns-search/d /mnt/openstack/content/0000; sed -i /dns-nameservers/d /mnt/openstack/content/0000;umount /mnt"
+      with_items:
+      - "{{dir_name.stdout_lines}}"
+
+    - name: Updating DNS Settings
+      raw: "mount -o loop /x/nova/instances/{{ item }}/disk.config /mnt; echo \"    dns-search dcg01.chd.paypalinc.com phx.paypalinc.com paypalinc.com phx.paypal.com slc.paypal.com paypal.com \" >> /mnt/openstack/content/0000; echo \"    dns-nameservers 10.192.128.53 10.192.129.53\" >> /mnt/openstack/content/0000;umount /mnt"
+      with_items:
+      - "{{dir_name.stdout_lines}}"
