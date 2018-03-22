@@ -27,6 +27,6 @@
       - "{{dir_name.stdout_lines}}"
 
     - name: Updating DNS Settings
-      raw: "mount -o loop /x/nova/instances/{{ item }}/disk.config /mnt; echo \"    dns-search dcg01.chd.paypalinc.com phx.paypalinc.com paypalinc.com phx.paypal.com slc.paypal.com paypal.com \" >> /mnt/openstack/content/0000; echo \"    dns-nameservers 10.192.128.53 10.192.129.53\" >> /mnt/openstack/content/0000;umount /mnt"
+      raw: "mount -o loop /x/nova/instances/{{ item }}/disk.config /mnt; echo \"    dns-search <DOMAIN_NAME>\" >> /mnt/openstack/content/0000; echo \"    dns-nameservers <IP_ADDRESS>\" >> /mnt/openstack/content/0000;umount /mnt"
       with_items:
       - "{{dir_name.stdout_lines}}"
